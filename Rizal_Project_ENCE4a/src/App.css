@@ -30,18 +30,18 @@
 
 .about-page {
   margin: 0;
-  padding: 20px;
+  padding: 18px;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(100, 71, 44, 0.17);
   text-align: left;
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .about-page h2 {
   margin: 0 0 8px;
-  font-size: 1.15rem;
+  font-size: 1.28rem;
   color: #3c2b1f;
 }
 
@@ -49,6 +49,209 @@
   margin: 0;
   max-width: 90ch;
   color: #5d4a3c;
+}
+
+.about-lead {
+  line-height: 1.55;
+  font-size: 1rem;
+}
+
+.about-sections {
+  margin-top: 4px;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 10px;
+}
+
+.about-block {
+  border-radius: 12px;
+  border: 1px solid rgba(94, 72, 54, 0.2);
+  background: rgba(255, 255, 255, 0.55);
+  padding: 12px;
+}
+
+.about-block h3 {
+  margin: 0 0 6px;
+  font-size: 0.98rem;
+  color: #3f2e20;
+}
+
+.about-block p {
+  margin: 0;
+  line-height: 1.5;
+  color: #5b4839;
+}
+
+.about-block ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #5b4839;
+  line-height: 1.5;
+}
+
+.about-block li + li {
+  margin-top: 4px;
+}
+
+.about-note {
+  margin-top: 2px;
+  border-radius: 10px;
+  border: 1px dashed rgba(66, 112, 128, 0.32);
+  background: rgba(65, 149, 174, 0.08);
+  padding: 8px 10px;
+}
+
+.about-note p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.rizal-about {
+  margin: 0;
+  padding: 20px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(100, 71, 44, 0.17);
+  text-align: left;
+}
+
+.rizal-about-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.rizal-portrait-wrap {
+  border-radius: 14px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(82, 62, 45, 0.2);
+}
+
+.rizal-portrait {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #f3e6d5 0%, #d9b894 100%);
+  background-size: cover;
+  background-position: center top;
+}
+
+.rizal-about-copy h2 {
+  margin: 6px 0 12px;
+  font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+  color: #2d2118;
+}
+
+.rizal-about-copy p {
+  margin: 0 0 12px;
+  max-width: 78ch;
+  line-height: 1.62;
+  color: #4f4034;
+}
+
+.literature-page {
+  margin: 0;
+  padding: 20px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(100, 71, 44, 0.17);
+  text-align: left;
+}
+
+.literature-page h2 {
+  margin: 10px 0 10px;
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  color: #2f2219;
+}
+
+.literature-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.literature-stats span {
+  border: 1px solid rgba(42, 106, 127, 0.35);
+  background: rgba(47, 122, 145, 0.11);
+  color: #205f74;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.literature-lead {
+  margin: 0 0 14px;
+  max-width: 88ch;
+  line-height: 1.58;
+  color: #554537;
+}
+
+.literature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.literature-card {
+  border-radius: 12px;
+  border: 1px solid rgba(92, 70, 52, 0.2);
+  background: rgba(255, 255, 255, 0.62);
+  padding: 12px;
+}
+
+.literature-card.featured {
+  border-color: rgba(32, 95, 116, 0.46);
+  background: linear-gradient(160deg, rgba(214, 235, 242, 0.4), rgba(255, 255, 255, 0.72));
+}
+
+.lit-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.literature-card h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #38281d;
+}
+
+.lit-form {
+  border: 1px solid rgba(95, 74, 57, 0.28);
+  background: rgba(255, 250, 241, 0.72);
+  color: #5b4738;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.lit-year {
+  margin: 4px 0 10px;
+  color: #22647c;
+  font-weight: 600;
+}
+
+.lit-focus {
+  margin-bottom: 8px;
+  color: #4f4034;
+}
+
+.literature-card p {
+  margin: 0 0 8px;
+  line-height: 1.52;
+  color: #544436;
+}
+
+.literature-card p:last-child {
+  margin-bottom: 0;
 }
 
 .tab-shell {
@@ -232,7 +435,10 @@
   border: 0;
   border-radius: 999px;
   background: transparent;
-  transform: translate(-50%, -50%);
+  transform: translate(
+    calc(-50% + var(--pin-offset-x, 0px)),
+    calc(-50% + var(--pin-offset-y, 0px))
+  );
   cursor: pointer;
 }
 
@@ -328,6 +534,7 @@
 .focus-content {
   position: relative;
   z-index: 1;
+  max-width: 78ch;
 }
 
 .location-focus h2 {
@@ -337,23 +544,25 @@
 }
 
 .focus-copy {
-  margin-top: 10px;
+  margin-top: 12px;
   max-width: 72ch;
+  line-height: 1.6;
 }
 
 .focus-label {
-  margin-bottom: 2px;
+  margin-top: 16px;
+  margin-bottom: 4px;
 }
 
 .focus-context-stack {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   max-width: 74ch;
 }
 
 .focus-context-line {
   margin: 0;
-  line-height: 1.45;
+  line-height: 1.62;
 }
 
 .focus-context {
@@ -463,6 +672,22 @@
   .side-top-actions {
     justify-content: flex-start;
     flex-wrap: wrap;
+  }
+
+  .about-sections {
+    grid-template-columns: 1fr;
+  }
+
+  .rizal-about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .literature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rizal-portrait-wrap {
+    max-width: 320px;
   }
 
   .details-panel {

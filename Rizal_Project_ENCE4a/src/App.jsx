@@ -18,6 +18,70 @@ const MIN_ZOOM = 1
 const MAX_ZOOM = 4
 const ZOOM_STEP = 1.2
 
+const philippinesPinOffsets = {
+  manila: { x: -14, y: -10 },
+  'fort-santiago': { x: 14, y: -8 },
+  bagumbayan: { x: 2, y: 14 },
+}
+
+const rizalWorks = [
+  {
+    id: 'noli',
+    title: 'Noli Me Tangere',
+    form: 'Novel',
+    years: '1884-1887',
+    focus: 'Social critique and reform consciousness',
+    aim: 'Expose social injustice, clerical abuse, racial discrimination, and corruption in colonial Philippine society.',
+    where: 'Drafted while in Madrid and Paris; completed and prepared for publication in Berlin.',
+    details:
+      'Rizal wrote Noli Me Tangere as a reformist novel intended to awaken civic awareness among Filipinos and challenge complacency among colonial authorities. The narrative used fictional characters and town life to make structural abuse visible to readers across classes. Its publication in 1887 quickly drew both admiration and hostility, especially from institutions criticized in the text. The novel became foundational to nationalist consciousness because it transformed lived grievances into a shared moral and political language.',
+  },
+  {
+    id: 'fili',
+    title: 'El Filibusterismo',
+    form: 'Novel',
+    years: '1887-1891',
+    focus: 'Radical political warning and moral consequence',
+    aim: 'Present a darker, sharper critique of failed reform, social decay, and the consequences of entrenched colonial oppression.',
+    where: 'Substantial writing in London, Paris, and Brussels; finalized and published in Ghent, Belgium.',
+    details:
+      'As the sequel to Noli, El Filibusterismo reflected Rizal\'s frustration with the limited progress of peaceful reform under colonial rule. Its tone is more urgent and tragic, showing how injustice can radicalize individuals and corrode institutions. The novel was both literary and strategic: it warned of social collapse if reform remained blocked. By tracing the moral costs of vengeance, corruption, and state violence, Rizal offered a profound political meditation that still shapes discussions on nationhood and governance.',
+  },
+  {
+    id: 'morga',
+    title: 'Morga Annotation (Sucesos de las Islas Filipinas)',
+    form: 'Historical annotation',
+    years: '1888-1890',
+    focus: 'Historical recovery and national dignity',
+    aim: 'Recover pre-colonial Filipino agency and challenge colonial historiography that portrayed Filipinos as uncivilized before Spanish rule.',
+    where: 'Primary archival research at the British Museum in London; annotation work continued in Europe.',
+    details:
+      'Rizal\'s annotated edition of Antonio de Morga was a historical intervention, not merely an academic exercise. He used evidence and commentary to contest distorted narratives about Filipino culture, governance, and capability. This project complemented his novels by grounding reform arguments in documented history. Through this work, Rizal demonstrated that national dignity also depends on reclaiming historical memory from colonial interpretation.',
+  },
+  {
+    id: 'indolencia',
+    title: 'La Indolencia de los Filipinos and Reform Essays',
+    form: 'Essays',
+    years: '1890',
+    focus: 'Structural analysis of colonial society',
+    aim: 'Explain the roots of social stagnation through historical, political, and economic causes rather than racial stereotypes.',
+    where: 'Written in Europe for publication in reformist outlets such as La Solidaridad.',
+    details:
+      'In his essays, Rizal argued that so-called Filipino indolence was largely a consequence of colonial policies, forced labor systems, limited opportunities, and chronic insecurity. He applied comparative analysis and historical reasoning to counter simplistic and racist judgments. These writings helped shift reform discourse from moral blame toward structural diagnosis. As a body of work, his essays showed that intellectual resistance could be rigorous, evidence-based, and politically transformative.',
+  },
+  {
+    id: 'mi-ultimo-adios',
+    title: 'Mi Ultimo Adios',
+    form: 'Poem',
+    years: '1896',
+    focus: 'Martyrdom, nation, and final testament',
+    aim: 'Offer a final patriotic farewell, affirming love of country, sacrifice, and hope for a free Filipino future.',
+    where: 'Written in Fort Santiago in Manila on the eve of his execution; finished shortly before December 30, 1896.',
+    details:
+      'Mi Ultimo Adios is Rizal\'s final poetic testament, composed in prison before his execution at Bagumbayan. In the poem, he offers his life to the nation and frames death as meaningful when given for truth, freedom, and the dignity of one\'s people. Its language blends personal farewell, political conviction, and spiritual calm, revealing both his intellectual discipline and moral courage at the end of his life. The manuscript was preserved by his family and later became one of the most important texts in Philippine nationalist memory, frequently taught, recited, and studied as a foundational expression of patriotic sacrifice.',
+  },
+]
+
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
 
 const mapTabs = [
@@ -223,7 +287,10 @@ function App() {
   const [activeTab, setActiveTab] = useState('world')
   const [isLocationFocusOpen, setIsLocationFocusOpen] = useState(false)
   const [isAboutPageOpen, setIsAboutPageOpen] = useState(false)
+  const [isAboutRizalOpen, setIsAboutRizalOpen] = useState(false)
+  const [isLiteratureOpen, setIsLiteratureOpen] = useState(false)
   const [focusBackgrounds, setFocusBackgrounds] = useState({})
+  const [rizalImage, setRizalImage] = useState('')
   const [zoomByMap, setZoomByMap] = useState({
     world: { scale: 1, x: 0, y: 0 },
     philippines: { scale: 1, x: 0, y: 0 },
@@ -241,7 +308,37 @@ function App() {
     setActivePointId(activeMap.points[0].id)
     setIsLocationFocusOpen(false)
     setIsAboutPageOpen(false)
+    setIsAboutRizalOpen(false)
+    setIsLiteratureOpen(false)
   }, [activeMap])
+
+  useEffect(() => {
+    if (!isAboutRizalOpen || rizalImage) {
+      return
+    }
+
+    let isCancelled = false
+
+    fetch('https://en.wikipedia.org/api/rest_v1/page/summary/Jose_Rizal')
+      .then((response) => response.json())
+      .then((data) => {
+        if (isCancelled) {
+          return
+        }
+
+        const imageUrl = data?.originalimage?.source || data?.thumbnail?.source
+        if (imageUrl) {
+          setRizalImage(imageUrl)
+        }
+      })
+      .catch(() => {
+        // Keep fallback visual if image fails.
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [isAboutRizalOpen, rizalImage])
 
   const activePoint =
     activeMap.points.find((point) => point.id === activePointId) ??
@@ -250,13 +347,15 @@ function App() {
   const widerContextParagraphs = useMemo(() => {
     const parts = activePoint.during.match(/[^.!?]+[.!?]*/g) ?? []
     const cleaned = parts.map((sentence) => sentence.trim()).filter(Boolean)
-    const grouped = []
-
-    for (let index = 0; index < cleaned.length; index += 2) {
-      grouped.push(cleaned.slice(index, index + 2).join(' '))
+    if (cleaned.length <= 2) {
+      return [cleaned.join(' ')]
     }
 
-    return grouped
+    const midpoint = Math.ceil(cleaned.length / 2)
+    return [
+      cleaned.slice(0, midpoint).join(' '),
+      cleaned.slice(midpoint).join(' '),
+    ]
   }, [activePoint])
 
   useEffect(() => {
@@ -336,6 +435,14 @@ function App() {
       left: `${Math.min(Math.max((x / width) * 100, 2), 98)}%`,
       top: `${Math.min(Math.max((y / height) * 100, 2), 98)}%`,
     }
+  }
+
+  const getPinOffset = (pointId) => {
+    if (activeMap.key !== 'philippines') {
+      return { x: 0, y: 0 }
+    }
+
+    return philippinesPinOffsets[pointId] ?? { x: 0, y: 0 }
   }
 
   const updateActiveMapZoom = (updater) => {
@@ -433,7 +540,109 @@ function App() {
         <h1>Jose Rizal Travel Atlas</h1>
       </header>
 
-      {isAboutPageOpen ? (
+      {isLiteratureOpen ? (
+        <section className="literature-page" aria-label="Rizal literature and writings">
+          <button
+            className="back-button"
+            onClick={() => setIsLiteratureOpen(false)}
+          >
+            Back to Map
+          </button>
+
+          <p className="detail-label">Rizal's Writings</p>
+          <h2>Rizal's Literature and Intellectual Works</h2>
+          <div className="literature-stats">
+            <span>{rizalWorks.length} featured works</span>
+            <span>Coverage: 1884-1896</span>
+            <span>Form: novels, essays, poem, history</span>
+          </div>
+          <p className="literature-lead">
+            Rizal's writings were not isolated literary achievements. They were part
+            of a sustained reform project that used fiction, history, and essay
+            writing to confront colonial abuse, recover Filipino dignity, and shape
+            a modern political imagination.
+          </p>
+
+          <div className="literature-grid">
+            {rizalWorks.map((work) => (
+              <article
+                key={work.id}
+                className={`literature-card ${work.id === 'mi-ultimo-adios' ? 'featured' : ''}`}
+              >
+                <div className="lit-head">
+                  <h3>{work.title}</h3>
+                  <span className="lit-form">{work.form}</span>
+                </div>
+                <p className="lit-year">{work.years}</p>
+                <p className="lit-focus">
+                  <strong>Historical focus:</strong> {work.focus}
+                </p>
+                <p>
+                  <strong>Aim:</strong> {work.aim}
+                </p>
+                <p>
+                  <strong>Where written/finished:</strong> {work.where}
+                </p>
+                <p>{work.details}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : isAboutRizalOpen ? (
+        <section className="rizal-about" aria-label="About Jose Rizal">
+          <button
+            className="back-button"
+            onClick={() => setIsAboutRizalOpen(false)}
+          >
+            Back to Map
+          </button>
+
+          <div className="rizal-about-grid">
+            <div className="rizal-portrait-wrap">
+              <div
+                className="rizal-portrait"
+                style={{
+                  backgroundImage: rizalImage ? `url(${rizalImage})` : undefined,
+                }}
+                aria-label="Portrait of Jose Rizal"
+              ></div>
+            </div>
+
+            <div className="rizal-about-copy">
+              <p className="detail-label">About Rizal</p>
+              <h2>Who Is Jose Rizal?</h2>
+              <p>
+                Dr. Jose Protasio Rizal was a Filipino nationalist, physician,
+                novelist, historian, and reform advocate whose ideas helped shape
+                the Philippine national consciousness. Born in 1861 in Calamba,
+                Laguna, he excelled in science and the humanities, mastered multiple
+                languages, and pursued advanced studies in Europe, especially in
+                ophthalmology. Beyond his professional achievements, Rizal used his
+                intellect to expose social injustice and colonial abuse in the
+                Philippines through essays, letters, and public engagement.
+              </p>
+              <p>
+                His novels Noli Me Tangere and El Filibusterismo powerfully revealed
+                the structural problems of late Spanish colonial society, including
+                corruption, discrimination, and abuse of power. These works did not
+                merely criticize authority; they inspired moral reflection, civic
+                awareness, and a shared sense of identity among Filipinos. Rizal
+                advocated peaceful reform, education, and dignity, believing that an
+                informed and principled citizenry was essential for national progress.
+              </p>
+              <p>
+                In 1892 he founded La Liga Filipina, a civic organization aimed at
+                lawful reforms and mutual aid. Although exiled to Dapitan and later
+                executed at Bagumbayan in 1896, his ideas endured and helped unify
+                the broader struggle for freedom. Today, Rizal remains one of the
+                most important figures in Philippine history because he combined
+                scholarship, ethical leadership, and patriotism in service of his
+                people.
+              </p>
+            </div>
+          </div>
+        </section>
+      ) : isAboutPageOpen ? (
         <section className="about-page" aria-label="About this page">
           <button
             className="back-button"
@@ -442,17 +651,40 @@ function App() {
             Back to Map
           </button>
           <h2>About this page</h2>
-          <p>
-            This page is an interactive learning atlas about Jose Rizal. It helps
-            you explore the places he lived in, traveled to, studied in, and wrote
-            from, while showing what happened in those locations and why they
-            mattered in Philippine history.
+
+          <p className="about-lead">
+            This interactive atlas helps you understand Jose Rizal through place,
+            time, and historical context. Instead of reading a flat timeline, you
+            can explore where key events happened and how each location influenced
+            Rizal\'s ideas, reforms, and legacy.
           </p>
-          <p>
-            Use the World Map and Philippines Map tabs to compare local and global
-            contexts, click map markers for location-specific summaries, and open
-            View Details for deeper narrative content.
-          </p>
+
+          <div className="about-sections">
+            <article className="about-block">
+              <h3>How to use this atlas</h3>
+              <ul>
+                <li>Pick World Map or Philippines Map to set your scope.</li>
+                <li>Click pins or trail entries to switch locations.</li>
+                <li>Open View Details for deeper historical context.</li>
+              </ul>
+            </article>
+
+            <article className="about-block">
+              <h3>Why this format helps</h3>
+              <p>
+                Organizing Rizal\'s life by place makes it easier to connect his
+                education, travels, reform work, and final years with the larger
+                events of the 19th century.
+              </p>
+            </article>
+          </div>
+
+          <div className="about-note">
+            <p>
+              Tip: Compare one location from the World Map and one from the
+              Philippines Map to see how Rizal\'s perspective evolved across regions.
+            </p>
+          </div>
         </section>
       ) : isLocationFocusOpen ? (
         <section className="location-focus" aria-label="Focused location details">
@@ -490,11 +722,6 @@ function App() {
                   {paragraph}
                 </p>
               ))}
-              <p className="focus-context-line">
-                Together, these local and global developments show how Rizal's life
-                was tied to larger political, educational, and social transformations
-                in the late 19th century.
-              </p>
             </div>
 
             <div className="focus-context">
@@ -552,19 +779,25 @@ function App() {
                     />
                   )}
 
-                  {activeMap.points.map((point) => (
-                    <button
-                      key={point.id}
-                      className={`pin ${activePoint.id === point.id ? 'selected' : ''}`}
-                      style={{
-                        ...getPinPosition(point),
-                        '--label-x': `${point.labelDx ?? 0}px`,
-                        '--label-y': `${point.labelDy ?? 0}px`,
-                      }}
-                      onClick={() => setActivePointId(point.id)}
-                      aria-label={`View ${point.name}`}
-                    />
-                  ))}
+                  {activeMap.points.map((point) => {
+                    const pinOffset = getPinOffset(point.id)
+
+                    return (
+                      <button
+                        key={point.id}
+                        className={`pin ${activePoint.id === point.id ? 'selected' : ''}`}
+                        style={{
+                          ...getPinPosition(point),
+                          '--label-x': `${point.labelDx ?? 0}px`,
+                          '--label-y': `${point.labelDy ?? 0}px`,
+                          '--pin-offset-x': `${pinOffset.x}px`,
+                          '--pin-offset-y': `${pinOffset.y}px`,
+                        }}
+                        onClick={() => setActivePointId(point.id)}
+                        aria-label={`View ${point.name}`}
+                      />
+                    )
+                  })}
                 </div>
 
                 <div
@@ -592,26 +825,52 @@ function App() {
                 <button
                   className="focus-button"
                   onClick={() => {
-                    setIsAboutPageOpen(true)
+                    setIsLiteratureOpen(true)
+                    setIsAboutRizalOpen(false)
+                    setIsAboutPageOpen(false)
                     setIsLocationFocusOpen(false)
                   }}
                 >
-                  About this page
+                  Literature
                 </button>
                 <button
                   className="focus-button"
                   onClick={() => {
-                    setIsLocationFocusOpen(true)
+                    setIsAboutRizalOpen(true)
                     setIsAboutPageOpen(false)
+                    setIsLiteratureOpen(false)
+                    setIsLocationFocusOpen(false)
                   }}
                 >
-                  View Details
+                  About Rizal
+                </button>
+                <button
+                  className="focus-button"
+                  onClick={() => {
+                    setIsAboutPageOpen(true)
+                    setIsAboutRizalOpen(false)
+                    setIsLiteratureOpen(false)
+                    setIsLocationFocusOpen(false)
+                  }}
+                >
+                  About this page
                 </button>
               </div>
 
               <aside className="details-panel">
                 <div className="details-header-row">
                   <p className="detail-label">Selected Location</p>
+                  <button
+                    className="focus-button"
+                    onClick={() => {
+                      setIsLocationFocusOpen(true)
+                      setIsAboutPageOpen(false)
+                      setIsAboutRizalOpen(false)
+                      setIsLiteratureOpen(false)
+                    }}
+                  >
+                    View Details
+                  </button>
                 </div>
                 <h3>{activePoint.name}</h3>
                 <p className="year-chip">{activePoint.years}</p>
