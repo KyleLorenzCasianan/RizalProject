@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "installCommand": "npm install --prefix Rizal_Project_ENCE4a",
+  "buildCommand": "npm run build --prefix Rizal_Project_ENCE4a",
+  "outputDirectory": "Rizal_Project_ENCE4a/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
